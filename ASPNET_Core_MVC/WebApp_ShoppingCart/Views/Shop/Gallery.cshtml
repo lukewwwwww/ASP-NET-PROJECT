@@ -1,0 +1,97 @@
+﻿@{
+	ViewData["Title"] = "Gallery";
+	var currUser = (String.IsNullOrEmpty(ViewBag.displayname)) ? "User" : ViewBag.displayname;
+	var products = ViewBag.products;
+	var filter = ViewBag.filter;
+	var search = ViewBag.search;
+
+	string cartCount;
+	if (ViewBag.cartCount == null) { cartCount = "0"; }
+	else if (ViewBag.cartCount < 100) { cartCount = ViewBag.cartCount?.ToString(); }
+	else { cartCount = "99+"; }
+}
+
+@section Scripts {
+	<script src="/js/gallery.js" defer></script>
+}
+
+@section DebugInfo {
+	<span class="ms-4 text-danger" style="position: absolute; right:0px">@ViewBag.debugInfo</span>
+}
+
+@section NavLeft {
+	<a class="navbar-brand pe-2">Hello, <span>@currUser</span></a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+			aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+}
+
+@section NavLink {
+	<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+		<ul class="navbar-nav flex-grow-1">
+			<li class="nav-item">
+				<a class="nav-link text-primary" asp-area="" asp-controller="Account" asp-action="History">My Purchases</a>
+			</li>
+			<li class="nav-item d-block d-sm-none">
+				<a class="nav-link text-primary" asp-area="" asp-controller="Cart" asp-action="Index">My Cart</a>
+			</li>
+			@if ((String.IsNullOrEmpty(ViewBag.displayname)))
+			{
+				<li class="nav-item">
+					<a class="nav-link text-primary" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+				</li>
+			} else 
+			{
+				<li class="nav-item">
+					<a class="nav-link text-primary" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+				</li>
+			}
+		</ul>
+	</div>
+}
+
+@section NavRight {
+	<div class="d-none d-sm-block">
+		<!--https://icons.getbootstrap.com/icons/cart-fill/-->
+		<!--https://getbootstrap.com/docs/5.0/components/badge/-->
+		<ul class="navbar-nav flex-grow-1">
+			<li class="nav-item">
+				<a class="nav-link text-dark position-relative cart-link" asp-area="" asp-controller="Cart" asp-action="Index">
+					<i class="bi bi-cart-fill"></i>
+					<span class="position-absolute translate-middle badge rounded-pill bg-danger" id="cartCount" style="font-size:.6em">@cartCount</span>
+				</a>
+			</li>
+		</ul>
+	</div>
+}
+
+<div id="body-gallery">
+	<h1 class="display-4">Products Gallery</h1><br />
+	<form id="formSearch">
+		<div class="input-group">
+			<span class="input-group-text" id="buttonSearch" onclick="document.getElementById('formSearch').submit();">
+				<i class="bi bi-search"></i>
+			</span>
+			<input type="text" class="form-control" id="searchbar" name="search" placeholder="Enter your search here..." value=@search>
+		</div>
+	</form>
+
+	<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+		@for(int i = 0; i < products.Count; i++)
+		{
+			<div class="col @((filter[i]) ? "" : "hide-product")">
+				<div class="card">
+					<img src="@products[i].ImageUrl" class="card-img-top">
+					<div class="card-body">
+						<h5 class="card-title">@products[i].Name</h5>
+						<p class="card-text desc-height-3">@products[i].Description</p>
+					</div>
+					<div class="card-footer">
+						<button type="button" class="btn btn-primary btn-addCart" data-product-id="@products[i].Id">$@products[i].Price - Add to Cart</button>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+</div>

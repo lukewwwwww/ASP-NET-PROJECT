@@ -1,0 +1,99 @@
+﻿@{
+	ViewData["Title"] = "My Purchase History";
+	var currUser = (String.IsNullOrEmpty(ViewBag.displayname)) ? "User" : ViewBag.displayname;
+	var purchases = ViewBag.purchases;
+}
+
+@section Scripts {
+	<script src="/js/gallery.js" defer></script>
+}
+
+@section DebugInfo {
+	<span class="ms-4 text-danger" style="position: absolute; right:0px">@ViewBag.debugInfo</span>
+}
+
+@section NavLeft {
+	<a class="navbar-brand pe-2">Hello, <span>@currUser</span></a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+			aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+}
+
+@section NavLink {
+	<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+		<ul class="navbar-nav flex-grow-1">
+			<li class="nav-item">
+				<a class="nav-link text-primary" asp-area="" asp-controller="Shop" asp-action="Gallery">Home</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link text-primary" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+			</li>
+		</ul>
+	</div>
+}
+
+<div id="body-history">
+	<h1 class="display-4">My Purchases</h1><br />
+	<div class="product-container">
+		@if (purchases != null && purchases.Count > 0)
+		{
+			@foreach (Purchase p in purchases)
+			{
+				string displayPrice = String.Format($"{p.Price:C2}");
+
+				<div class="row product-row mb-4">
+					<div class="col-1"></div>
+					<div class="col-4">
+						<div class="card">
+							<img src=@p.ImageUrl class="card-img-top">
+							<div class="card-body">
+								<h5 class="card-title">@p.Name</h5>
+								<p class="card-text desc-height-3">@p.Description</p>
+							</div>
+							<div class="card-footer">
+								<button type="button" class="btn btn-primary">Download</button>
+							</div>
+						</div>
+					</div>
+					<div class="col-7 product-details-container">
+						<div class="product-details">
+							<div class="row">
+								<span class="col-3">Order ID:</span>
+								<span class="col-9">@p.OrderId</span>
+							</div>
+							<div class="row">
+								<span class="col-3">Purchased On:</span>
+								<span class="col-9">@p.Date</span>
+							</div>
+							<div class="row">
+								<span class="col-3">Quantity:</span>
+								<span class="col-9">@p.ActivationCode.Count()</span>
+							</div>
+							<div class="row">
+								<span class="col-3">Activation Code:</span>
+								<span class="col-9">
+									@if(p.ActivationCode.Count() == 1)
+									{
+										@p.ActivationCode[0];
+									} else
+									{
+										<select id="ActivationCode" name="ActivationCode">
+											@foreach (string code in p.ActivationCode)
+											{
+												<option value="ActivationCode">@code</option>
+											}
+										</select>
+									}
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			}
+		} else
+		{
+			<p>You have not yet purchased any items.</p>
+		}
+	</div>
+</div>
